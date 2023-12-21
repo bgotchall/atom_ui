@@ -20,18 +20,26 @@ import pyvisa
 rm=pyvisa.ResourceManager()
 print("attempting to open GPIB")
 try:
+
     print("GPIB resources available: ",rm.list_resources())
     my_instrument = rm.open_resource('GPIB0::4::INSTR')
+    print("Handler ID query:")
+    print(my_instrument.query('*IDN?'))
     print("UI starting.  The program should be loaded and the correct temperature set.  Enter to continue")
     a=input()
     print("Enter name of .STDF logfile")
     a=input()
+    
+    name=a + ".stdf"
+    print(name)
+    subprocess.run(["ateliercmd", "-getrevision"])
+    subprocess.run(["ateliercmd", "-stdf open " + name])
+
+    a=my_instrument.query('RFT?')
+
     print(a)
 
 
-
-
-    
 except:
     print("No GPIB or some other error.")
 
