@@ -17,38 +17,64 @@ import pyvisa
 #               Get test result
 #               Set bin1 or bin 2
 #End if
-rm=pyvisa.ResourceManager()
-print("attempting to open GPIB")
-try:
+if 1:
+    rm=pyvisa.ResourceManager()
+    print("attempting to open GPIB")
+    if 1:
+        
+        print("GPIB resources available:      ",rm.list_resources())
+        my_instrument = rm.open_resource('GPIB0::4::INSTR')
+        
+        
+        print("Handler ID query:       " + my_instrument.query('*IDN?'))
+        print("UI starting.  The program should be loaded and the correct temperature set.  Enter to continue")
+        a=input()
+        print("Enter name of .STDF logfile")
+        a=input()
+        
+        name=a + ".stdf"
+        #subprocess.run(["echo","  I am a subprocess command"])
 
-    print("GPIB resources available:      ",rm.list_resources())
-    my_instrument = rm.open_resource('GPIB0::4::INSTR')
-    
-    print("Handler ID query:       " + my_instrument.query('*IDN?'))
-    print("UI starting.  The program should be loaded and the correct temperature set.  Enter to continue")
-    a=input()
-    print("Enter name of .STDF logfile")
-    a=input()
-    
-    name=a + ".stdf"
-    print(name)
-    subprocess.run(["ls","-l"])
-    #subprocess.run(["ateliercmd", "-getrevision"])
-    #subprocess.run(["ateliercmd", "-stdf open " + name])
+        print ("Atelier version: ",end='', flush=True )     
+        subprocess.run(["ateliercmd.bat", "-getrevision"])
+        
+        #subprocess.run(["ateliercmd.bat", "-stdf", "open", name])
 
-    a=my_instrument.query('RFT?')       # RFT=0 means, yes there is a part ready.
-    if a==0:
-        subprocess.run(["ateliercmd", "-start"])     #start the flow.  might need to do a connect command first
-        temp=subprocess.run(["ateliercmd", "-getdutstatus"])                                       # -getdutstatus
-        print("output of dut status was:   ", temp)
+        num_of_units=3                         #how many units in your "tray"
+        for i in range(1,num_of_units+1):                  #hardcode the unit count for now 
+            print("======================================")
+            print("device index is: ",i)
+            a=my_instrument.query('RFT?')       # RFT=0 means, yes there is a part ready.
+            b=a.strip()
+            #print("result from RFT is: \"", b, "\"")
 
-    
+            print("waiting for handler...", end='', flush=True)
+            while "1" in b:
+                print('.', end='', flush=True)
+                a=my_instrument.query('RFT?')       # RFT=0 means, yes there is a part ready.
+                b=a.strip()
+                time.sleep(1)
+                #print("result from RFT is: \"", b, "\"")
+
+            if "0" in b:
+                print("Handler reports part is ready for test")
+                print("starting test now.")
+                subprocess.run(["ateliercmd.bat", "-start"])     #start the flow.  might need to do a connect command first
+                temp=subprocess.run(["ateliercmd.bat", "-getdutstatus"])                                       # -getdutstatus
+                #print("output of dut status was:   ", temp)
+                my_instrument.write('BIN1')         # this works.  tells the handler to move on.
+                time.sleep(1)
 
 
 
 
-except:
-    print("No GPIB or some other error.")
+        #subprocess.run(["ateliercmd.bat", "-stdf close"])
+
+
+
+
+    #except:
+       # print("ERROR: No GPIB or some other error.")
 
 
 
