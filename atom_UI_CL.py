@@ -1,6 +1,5 @@
 
 import time
-#import getpass
 import subprocess
 import pyvisa
 from MDSocketsForPython3 import MDSocket

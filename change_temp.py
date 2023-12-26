@@ -33,7 +33,7 @@ if 1:
         my_temp=my_temp/10
         print("new temp set point: ", my_temp, "C")
         print(s.ReadMB("0020"))
-        print("enabling run button")
+        print("enabling run button (0=on, 1=off)")
         print(s.WriteMB("0020",0))              # a 0 is "on", a 1 is "off"
 
 
