@@ -1,10 +1,9 @@
-import telnetlib
-#import asyncio, telnetlib3
+
 import time
 #import getpass
 import subprocess
 import pyvisa
-
+from MDSocketsForPython3 import MDSocket
 
 
 
@@ -17,7 +16,7 @@ import pyvisa
 #               Get test result
 #               Set bin1 or bin 2
 #End if
-if 1:
+if 0:
     rm=pyvisa.ResourceManager()
     print("attempting to open GPIB")
     if 1:
@@ -97,43 +96,24 @@ if 0:
     subprocess.run(["ateliercmd", "-getrevision"])
 
 ############################################
-#HOST ="www.sigmasense.com"
-#tn=telnetlib.Telnet(HOST,"80")
-#tn.write(b"ping\n")
-#print(tn.read_all())
 
 
-
-
-
-if 0:
-    HOST = "10.109.10.20, port=5000"
-    #user = input("USERNAME: ")
-    #password = getpass.getpass()
+if 1:
+    #socket info
+    ip_addr="10.109.10.20"
+    tcp_port=5000
+    timeout_secs = 3
+    s=MDSocket(ip_addr,tcp_port,timeout_secs)
+    print('Connecting...')
+    s.connect()
+    print(s.ReadMB("0020"))
+    print(s.ReadMI("0699"))
+    print(s.WriteMB("0020",0))
+    print(s.ReadMB("0020"))
     
-    tn = telnetlib.Telnet()
-    tn.open("10.109.10.20",5000,5)
-    time.sleep(0.5)
-    #tn.read_until(b"login: ")
-    #tn.write(user.encode("ascii")+b"\n")
-    #tn.read_until(b"Password: ")
-    #tn.write(password.encode("ascii")+b"\n")
-    #tn.write(b"exit\n")
-    #print("interact")
-    #tn.interact()
-
-    if 0:
-        print("writing the command")
-        #tn.write(user.encode('ascii') + b"mMI0699?\n")
-        tn.write(b"mMI0699?\n")
-        
-        print ("attempting to read")
-        print(tn.read_all())
-        #print(tn.read_until(b"MI0699"),4)
     
-
-
-    print ("attempting to close")
-    tn.close()
+    print(s.WriteMI("0699","0250"))
+    print(s.ReadMI("0699"))
+    s.disconnect()
 
 ######################################################################
