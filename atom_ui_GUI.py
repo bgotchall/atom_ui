@@ -1,4 +1,5 @@
 import wx
+import time
 from MDSocketsForPython3 import MDSocket
 
 
@@ -9,16 +10,44 @@ class MyFrame(wx.Frame):
         #panel = wx.Panel(self)      
 
         #my_sizer = wx.BoxSizer(wx.VERTICAL)   
-        def on_press(event):
-            set_point=s.ReadMI("0699")
+        def on_update_press(event):
+            self.static_text_status.SetLabel("Working.....")
+
+            text_in_set=self.my_text_ctrl_set.Value
+            if text_in_set=="update for value":         # for the first ime just read
+                result=s.ReadMI("0699")
+                set_point=int(result.split(",")[1])
+                set_point=str(set_point/10)
+            else:
+                new_val=float(text_in_set)*10
+                new_val=int(new_val)
+                new_val=str(new_val)
+                new_val=new_val.zfill(4)
+                print (new_val)
+                print(s.WriteMI("0699",new_val))
+                result=s.ReadMI("0699")
+                set_point=int(result.split(",")[1])
+                set_point=str(set_point/10)
+
+
+
             self.my_text_ctrl_set.SetLabel(set_point)
-            actual_temp=s.ReadMI("0006")
+            result=s.ReadMI("0006")
+
+            actual_temp=int(result.split(",")[1])
+            actual_temp=str(actual_temp/10)
+
             self.my_text_ctrl_actual.SetLabel(actual_temp)
+            self.static_text_status.SetLabel("Updated.")
        
         def onClose(event):
             print ("closing the app")
             s.disconnect()
-            self.Close()    
+            self.Close()
+
+        def timer_update(event):
+            print("timer went off")
+
 #####
         splitter=wx.SplitterWindow(self,-1)
         splitter.SetMinimumPaneSize(20)
@@ -35,25 +64,33 @@ class MyFrame(wx.Frame):
 
 ######
         #self.text_ctrl = wx.TextCtrl(panel1,pos=(5,25))
-        self.my_text_ctrl_set= wx.TextCtrl(panel1,pos=(5,25),value="null")   
+        self.my_text_ctrl_set= wx.TextCtrl(panel1,pos=(5,25),value="update for value")   
         my_btn = wx.Button(panel1, label='update', pos=(5,135))
-        my_btn.Bind(wx.EVT_BUTTON, on_press)
+        my_btn.Bind(wx.EVT_BUTTON, on_update_press)
 
         self.static_text_set_temp=wx.StaticText(panel1, -1,
                        "Actual temp:",
                         (1,60), style=wx.ALIGN_LEFT)
-        self.my_text_ctrl_actual= wx.TextCtrl(panel1,pos=(5,80),value="null") 
+        self.my_text_ctrl_actual= wx.TextCtrl(panel1,pos=(5,80),value="update for value") 
         self.my_text_ctrl_actual.SetBackgroundColour(wx.LIGHT_GREY)
         
+        self.static_text_status=wx.StaticText(panel1, -1,
+                        "",
+                        (1,110), style=wx.ALIGN_LEFT)
+
         closeBtn = wx.Button(panel1, label="Close", pos=(5,165))
 
         closeBtn.Bind(wx.EVT_BUTTON, onClose)
+########  add a timer ############
+        self.myTimer=wx.Timer(self)
+        self.Bind(wx.EVT_TIMER,timer_update)
+        self.myTimer.Start(1000)
 
+#################################
 
         self.Show()
 
-
-        
+      
 
 
 
@@ -65,8 +102,6 @@ class MyApp(wx.App):
         return True
     
     
-
-
 
 if __name__ == '__main__':
     app = MyApp(0)
