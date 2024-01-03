@@ -1,5 +1,6 @@
 import wx
 import time
+#import os
 from MDSocketsForPython3 import MDSocket
 
 
@@ -47,6 +48,23 @@ class MyFrame(wx.Frame):
 
         def timer_update(event):
             print("timer went off")
+            self.static_text_status.SetLabel("Working.....")
+
+            converged=s.ReadMB("0083")             # see if it is converged
+            print(converged)
+
+            if 0:
+                result=s.ReadMI("0699")
+                set_point=int(result.split(",")[1])
+                set_point=str(set_point/10)
+                self.my_text_ctrl_set.SetLabel(set_point)
+
+                result=s.ReadMI("0006")
+                actual_temp=int(result.split(",")[1])
+                actual_temp=str(actual_temp/10)
+                self.my_text_ctrl_actual.SetLabel(actual_temp)
+
+            self.static_text_status.SetLabel("Updated. temp is converged")
 
 #####
         splitter=wx.SplitterWindow(self,-1)
@@ -82,9 +100,10 @@ class MyFrame(wx.Frame):
 
         closeBtn.Bind(wx.EVT_BUTTON, onClose)
 ########  add a timer ############
-        self.myTimer=wx.Timer(self)
-        self.Bind(wx.EVT_TIMER,timer_update)
-        self.myTimer.Start(1000)
+        if 0:
+            self.myTimer=wx.Timer(self)
+            self.Bind(wx.EVT_TIMER,timer_update)
+            self.myTimer.Start(10000)
 
 #################################
 
@@ -101,7 +120,7 @@ class MyApp(wx.App):
         self.SetTopWindow(frame)
         return True
     
-    
+
 
 if __name__ == '__main__':
     app = MyApp(0)
@@ -113,6 +132,6 @@ if __name__ == '__main__':
     s=MDSocket(ip_addr,tcp_port,timeout_secs)
     print('Connecting...')
     s.connect()
-
+    
 
     app.MainLoop()
