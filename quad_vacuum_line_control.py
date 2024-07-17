@@ -23,20 +23,31 @@ print(write_read("hi"))
 num=""
 
 
-print ("When working properly the Arduino will have echoed back Ready to flip some switches and Firmware version number above this message.")
+print ("When working properly the Arduino will have echoed back \"Ready to flip some switches\" above this message.")
 while num != "X" and num !="x":
     arduino.flush
-    num = input("Enter a number 1 (vac on) or 0 (vac off) (x to exit): ")
+    print("-------------------------------")
+    print("Enter a command")
+    print("1= Vacuum toggle")
+    print("2= Test site purge air toggle")
+    print("3= Send a press of the Start Button")
+    print("5= status of the relays")
+    num = input(" (x to exit): ")
+    print("-------------------------------")
     
     if 1:
         if num == "1":
-            print("Vacuum is on")
             print(write_read("1"))
+        elif num =="2":
+            print(write_read("2"))
+        elif num =="3":
+            print(write_read("3"))
+        elif num =="5":
+            print(write_read("5"))
+            print(write_read(""))
         elif num == "x":
-            print ("Normal exit.  Vacuum line is left in previous state.")
-        else:
-            print("Vacuum is off")
-            print(write_read("0"))
+            print ("Normal exit.  Vac and purge air are left in previous state.")
+            
    
 
 arduino.flush

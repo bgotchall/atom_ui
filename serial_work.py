@@ -1,17 +1,19 @@
 import serial
 import time
 
-arduino = serial.Serial(port='COM4',   baudrate=9600, timeout=.1)
+arduino = serial.Serial(port='COM3',   baudrate=115200, timeout=.1)
 
 
 def write_read(x):
     arduino.write(bytes(x,   'utf-8'))
     time.sleep(0.05)
-    data = arduino.readline()
+    #data = arduino.readline()
+    data = arduino.readline().decode('utf-8').rstrip()                      #this is the version for text.
     return   data
 
 
 while True:
-    num = input("Enter a number: ")
-    value   = write_read(num)
-    print(value)
+    this_thing=write_read("")
+    if this_thing !="":
+        print(this_thing)
+    
