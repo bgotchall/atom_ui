@@ -2,6 +2,8 @@
 #include "SparkFun_Qwiic_Relay.h"
 #define RELAY_ADDR 0x6D
 
+//This works with "quad_relay_control.py"
+
 //Qwiic_Relay relay(RELAY_ADDR); 
 Qwiic_Relay quadRelay(RELAY_ADDR); 
 

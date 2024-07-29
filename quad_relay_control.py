@@ -2,7 +2,7 @@ import serial
 import time
 
 arduino = serial.Serial(port='COM3',   baudrate=115200, timeout=1)
-
+# This works with "Relay_control_4x_July_16_2024.ino" to program the arduino.
 
 
 def write_read(x):
